@@ -1,0 +1,103 @@
+; KD9 BBS & RMS config File
+
+SIMPLE                                           ; This set a whole load of paramters to reasonable defaults
+NODECALL=KD9FKC-7                                ; Default node callsign
+LOCATOR=EM57wq                                   ; Defailt node location
+LINMAIL                                          ; Enable BBS
+
+IDINTERVAL=10                                    ; UI broadcast interval (minutes)
+IDMSG:                                           ; UI broadcast text
+STEVEN SIMON BBS & RMS.  Connect to KD9FKC-1 & KD9FKC-10.
+***
+
+CTEXT:                                           ; Connect Message
+Welcome to the STEVEN SIMON BPQ32 Node.
+KD9FKC> BBS RMS CONNECT BYE INFO NODES ROUTES PORTS USERS MHEARD
+***
+
+BTINTERVAL=10                                    ; Beacon interval (minutes)
+BTEXT:                                           ; Beacon text
+STEVEN SIMON BBS & RMS.  Connect to KD9FKC-1 & KD9FKC-10.
+***
+
+INFOMSG:                                         ; Text for INFO command
+This is the BPQ32 Node for the STEVEN SIMON.
+Sysop KD9FKC.
+Type BBS to connect to the BBS.
+Type RMS to connect to WinLink.
+***
+
+TNCPORT                                          ; Host Port
+   COMPORT=/home/pi/BPQ/com10                    ; Serial connection (created by BPQ)
+   TYPE=TNC2                                     ; TNC2,KANT,SCS,DED
+   APPLNUM=32                                    ; Last Application
+   APPLFLAGS=6                                   ; Display Connected Message
+ENDPORT
+
+;**********  Port 1  **********
+PORT
+   PORTNUM=1                                     ; Port number
+   ID=145.610 MHz 1200 bps                       ; PORTS command text
+   TYPE=ASYNC                                    ; USB connection
+   COMPORT=/dev/ttyUSB0                          ; USB port
+   SPEED=9600                                    ; USB port speed
+   PROTOCOL=KISS                                 ; KISS protocol
+   KISSOPTIONS=POLLED,ACKMODE                  ; KISS options for TNC
+   CHANNEL=A                                     ; TNC channel
+   MAXFRAME=2                                    ; Max outstanding frames
+   FRACK=7000                                    ; Level 2 timeout (ms)
+   RESPTIME=1000                                 ; Level 2 delayed ACK (ms)
+   RETRIES=10                                    ; Level 2 max retries
+   PACLEN=128                                    ; Max packet length (bytes)
+   TXDELAY=500                                   ; Transmit keyup delay (ms)
+   SLOTTIME=100                                  ; CMSA interval timer (ms)
+   PERSIST=64                                    ; Persistence (256/(# transmissions-1)
+   DIGIFLAG=1                                    ; Allow Digipeat on this port
+   WL2KREPORT PUBLIC,server.winlink.org,8085,KD9FKC-10,EM57wq,00-23,145610000,PKT1200,45,35,7,0 ; Report to WinLink
+ENDPORT
+
+;**********  Port 2  **********
+PORT
+   PORTNUM=2                                     ; Port number
+   ID=Telnet Server                              ; PORTS command text
+   DRIVER=TELNET                                 ; TCP/IP connection
+   CONFIG                                        ; Driver specific configuration from here to ENDPORT
+   LOGGING=1                                     ; Log all connections
+   DisconnectOnClose=1                           ; Disconnect on close
+   TCPPORT=8010                                  ; Port for telnet connections
+   FBBPORT=8011                                  ; Port for FBB protocol BBS connections
+   HTTPPORT=8008                                 ; Port for web interface
+   LOGINPROMPT=user:                             ; Telnet login prompt
+   PASSWORDPROMPT=password:                      ; Telnet password prompt
+   LOCALECHO=NO                                  ; Do not echo input
+   MAXSESSIONS=10                                ; Maxmimum simultaneous connections
+   CTEXT=KD9 BPQ32 Telnet Server\nEnter ? for list of commands\n\n ; Telnet connect message
+   USER=scs,xxxxxx,KD9FKC,NODE,SYSOP             ; Telnet user
+   CMS=1                                         ; Enable WinLink CMS connection
+   CMSCALL=KD9FKC                                ; Callsign for WinLink
+   CMSPASS=xxxxxxxxx                             ; Password for WinLink
+ENDPORT
+
+;**********  Port 3  **********
+PORT
+   PORTNUM=3                                     ; Port number
+   ID=AX/IP/UDP                                  ; Displayed by PORTS command
+   DRIVER=BPQAXIP                                ; Uses BPQAXIP
+   QUALITY=220                                   ; Quality factor applied to node broadcasts heard on
+   MINQUAL=165                                   ; Entries in the nodes table with qualities greater or
+   MAXFRAME=5                                    ; Max outstanding frames (1 thru 7)
+   FRACK=3000                                    ; Level 2 timeout in milliseconds
+   RESPTIME=1000                                 ; Level 2 delayed ack timer in milliseconds
+   RETRIES=5                                     ; Level 2 maximum retry value
+   PACLEN=236                                    ; Maximum packet length
+   CONFIG                                        ; Driver specific configuration from here to ENDPORT
+   MHEARD                                        ; Keep heard stats
+   UDP 10093                                     ; UDP port
+   AUTOADDMAP                                    ; Automatically add new connections
+   BROADCAST NODES                               ; Broadcast
+ENDPORT
+
+;**********  Applications  **********
+APPLICATION 1,BBS,,KD9FKC-1,KD9BBS,255           ; BBS Application
+APPLICATION 2,RMS,C 2 CMS,KD9FKC-10,KD9RMS,255   ; CMS Application
+APPLICATION 32,TALK,,KD9FKC                      ; Node Application
