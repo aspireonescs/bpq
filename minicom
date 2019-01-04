@@ -1,0 +1,7 @@
+send "^C"
+send "D"
+send ""
+send "auto on"
+send "echo on"
+send "conok on"
+send "cbell on"
